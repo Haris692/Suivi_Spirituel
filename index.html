@@ -1,191 +1,185 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi Spirituel Amélioré</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js CDN -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        h1, h2 {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .container {
-            width: 90%;
-            max-width: 700px;
-            margin: 0 auto;
-            background: #fff;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        .button {
-            display: block;
-            background: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            margin-top: 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .button:hover {
-            background: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        canvas {
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suivi Spirituel</title>
+  <style>
+    /* ---- Style Général ---- */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f7f6;
+      color: #333;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    /* ---- Tableau ---- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+      transition: background-color 0.3s ease;
+    }
+
+    /* ---- Boutons ---- */
+    .button {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 10px 5px;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #45a049;
+    }
+
+    /* ---- Cards pour mobiles ---- */
+    .card {
+      display: none;
+      background-color: white;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #4CAF50;
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* ---- Responsive Design ---- */
+    @media (max-width: 768px) {
+      table {
+        display: none;
+      }
+
+      .card {
+        display: block;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Suivi Spirituel Amélioré</h1>
-    <div class="container">
-        <form id="dailyForm">
-            <label><input type="checkbox" name="prayer" value="1"> Prière en groupe</label>
-            <label><input type="checkbox" name="quran" value="1"> Lecture du Coran</label>
-            <label><input type="checkbox" name="dhikr" value="1"> Dhikr (Tasbih, Istighfar)</label>
-            <label><input type="checkbox" name="sadaqa" value="1"> Aumône (Sadaqa)</label>
-            <label><input type="checkbox" name="family" value="1"> Soutien à la famille</label>
-            <label><input type="checkbox" name="reflection" value="1"> Temps de réflexion</label>
-            <a href="#" class="button" id="submitButton">Enregistrer les actions</a>
-        </form>
+  <header>
+    <h1>Tableau de Suivi Spirituel</h1>
+  </header>
 
-        <h2>Rapport Hebdomadaire</h2>
-        <table id="reportTable">
-            <thead>
-                <tr>
-                    <th>Jour</th>
-                    <th>Prière</th>
-                    <th>Coran</th>
-                    <th>Dhikr</th>
-                    <th>Sadaqa</th>
-                    <th>Famille</th>
-                    <th>Réflexion</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+  <div class="container">
+    <!-- Tableau pour les écrans larges -->
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Pratique</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+      <tr>
+        <td>16/12/2024</td>
+        <td>Prière de Fajr</td>
+        <td>Effectuée</td>
+        <td>
+          <button class="button">Modifier</button>
+          <button class="button">Supprimer</button>
+        </td>
+      </tr>
+      <tr>
+        <td>17/12/2024</td>
+        <td>Lecture du Coran</td>
+        <td>Non effectuée</td>
+        <td>
+          <button class="button">Modifier</button>
+          <button class="button">Supprimer</button>
+        </td>
+      </tr>
+    </table>
 
-        <canvas id="chart"></canvas>
+    <!-- Cards pour les petits écrans -->
+    <div class="card">
+      <h3>Date : 16/12/2024</h3>
+      <p><strong>Pratique :</strong> Prière de Fajr</p>
+      <p><strong>Statut :</strong> Effectuée</p>
+      <button class="button">Modifier</button>
+      <button class="button">Supprimer</button>
     </div>
-
-    <script>
-        const form = document.getElementById("dailyForm");
-        const submitButton = document.getElementById("submitButton");
-        const reportTable = document.querySelector("#reportTable tbody");
-
-        let weeklyData = JSON.parse(localStorage.getItem("weeklyData")) || [];
-
-        // Sauvegarder les actions
-        submitButton.addEventListener("click", (e) => {
-            e.preventDefault();
-
-            const today = new Date();
-            const formattedDate = today.toLocaleDateString("fr-FR", { weekday: 'long' });
-
-            const formData = {
-                jour: formattedDate,
-                prayer: form.elements['prayer'].checked ? 1 : 0,
-                quran: form.elements['quran'].checked ? 1 : 0,
-                dhikr: form.elements['dhikr'].checked ? 1 : 0,
-                sadaqa: form.elements['sadaqa'].checked ? 1 : 0,
-                family: form.elements['family'].checked ? 1 : 0,
-                reflection: form.elements['reflection'].checked ? 1 : 0,
-            };
-
-            weeklyData.push(formData);
-            localStorage.setItem("weeklyData", JSON.stringify(weeklyData));
-
-            updateTable();
-            updateChart();
-            form.reset();
-        });
-
-        // Mettre à jour le tableau des rapports
-        function updateTable() {
-            reportTable.innerHTML = "";
-            weeklyData.forEach((data) => {
-                const row = `
-                    <tr>
-                        <td>${data.jour}</td>
-                        <td>${data.prayer ? "✔" : "-"}</td>
-                        <td>${data.quran ? "✔" : "-"}</td>
-                        <td>${data.dhikr ? "✔" : "-"}</td>
-                        <td>${data.sadaqa ? "✔" : "-"}</td>
-                        <td>${data.family ? "✔" : "-"}</td>
-                        <td>${data.reflection ? "✔" : "-"}</td>
-                    </tr>
-                `;
-                reportTable.insertAdjacentHTML("beforeend", row);
-            });
-        }
-
-        // Créer et mettre à jour le graphique
-        const ctx = document.getElementById('chart').getContext('2d');
-        let chart;
-
-        function updateChart() {
-            const labels = weeklyData.map(item => item.jour);
-            const dataPoints = ["prayer", "quran", "dhikr", "sadaqa", "family", "reflection"];
-            const datasets = dataPoints.map((point, index) => ({
-                label: point.charAt(0).toUpperCase() + point.slice(1),
-                data: weeklyData.map(item => item[point]),
-                backgroundColor: `rgba(${index * 40}, 99, 132, 0.6)`,
-                borderColor: `rgba(${index * 40}, 99, 132, 1)`,
-                borderWidth: 1
-            }));
-
-            if (chart) chart.destroy();
-
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        // Initialiser le tableau et le graphique
-        updateTable();
-        updateChart();
-    </script>
+    <div class="card">
+      <h3>Date : 17/12/2024</h3>
+      <p><strong>Pratique :</strong> Lecture du Coran</p>
+      <p><strong>Statut :</strong> Non effectuée</p>
+      <button class="button">Modifier</button>
+      <button class="button">Supprimer</button>
+    </div>
+  </div>
 </body>
 </html>
