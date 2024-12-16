@@ -84,6 +84,19 @@
         .table-container {
             margin-top: 20px;
         }
+
+        /* Styles pour un rapport clair et facile à lire */
+        .report {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .report h3 {
+            color: #4CAF50;
+        }
+
     </style>
 </head>
 <body>
@@ -93,6 +106,7 @@
     </div>
 
     <div class="container">
+        <!-- Formulaire d'ajout -->
         <div class="form-container">
             <h3>Ajouter une nouvelle pratique</h3>
             <form id="form-pratique">
@@ -117,15 +131,14 @@
             </form>
         </div>
 
-        <div class="table-container">
-            <h3>Tableau des Pratiques</h3>
+        <!-- Rapport Journalier -->
+        <div class="report">
+            <h3>Rapport Journalier - <span id="current-date"></span></h3>
             <table id="table-pratiques">
                 <thead>
                     <tr>
-                        <th>Date</th>
                         <th>Pratique</th>
                         <th>Statut</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -136,6 +149,21 @@
     </div>
 
     <script>
+        // Fonction pour obtenir la date actuelle au format 'YYYY-MM-DD'
+        function getCurrentDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Mettre à jour la date actuelle dans le rapport journalier
+        document.getElementById('current-date').textContent = getCurrentDate();
+
+        // Stocker les pratiques dans un tableau
+        let pratiques = [];
+
         // Fonction pour ajouter une nouvelle ligne au tableau
         document.getElementById('form-pratique').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -145,42 +173,60 @@
             const pratique = document.getElementById('pratique').value;
             const statut = document.getElementById('statut').value;
 
-            // Créer une nouvelle ligne dans le tableau
-            const table = document.getElementById('table-pratiques').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-
-            // Créer les cellules
-            const cellDate = newRow.insertCell(0);
-            const cellPratique = newRow.insertCell(1);
-            const cellStatut = newRow.insertCell(2);
-            const cellActions = newRow.insertCell(3);
-
-            // Remplir les cellules avec les valeurs
-            cellDate.textContent = date;
-            cellPratique.textContent = pratique;
-            cellStatut.textContent = statut;
-
-            // Ajouter les boutons d'action
-            const btnModifier = document.createElement('button');
-            btnModifier.classList.add('button');
-            btnModifier.textContent = 'Modifier';
-            btnModifier.onclick = function() {
-                alert('Modification de la pratique : ' + date);
+            // Créer une nouvelle entrée de pratique
+            const newPratique = {
+                date: date,
+                pratique: pratique,
+                statut: statut
             };
 
-            const btnSupprimer = document.createElement('button');
-            btnSupprimer.classList.add('button');
-            btnSupprimer.textContent = 'Supprimer';
-            btnSupprimer.onclick = function() {
-                table.deleteRow(newRow.rowIndex - 1);
-            };
+            // Ajouter la nouvelle pratique à notre tableau
+            pratiques.push(newPratique);
 
-            cellActions.appendChild(btnModifier);
-            cellActions.appendChild(btnSupprimer);
+            // Afficher les pratiques du jour
+            updateJournalReport();
 
             // Réinitialiser le formulaire
             document.getElementById('form-pratique').reset();
         });
+
+        // Fonction pour afficher le rapport du jour
+        function updateJournalReport() {
+            const tableBody = document.getElementById('table-pratiques').getElementsByTagName('tbody')[0];
+
+            // Effacer le contenu existant du tableau
+            tableBody.innerHTML = '';
+
+            // Récupérer la date actuelle
+            const currentDate = getCurrentDate();
+
+            // Filtrer les pratiques pour le jour actuel
+            const dailyPractices = pratiques.filter(pratique => pratique.date === currentDate);
+
+            // Ajouter chaque pratique au tableau
+            dailyPractices.forEach(pratique => {
+                const newRow = tableBody.insertRow();
+
+                const cellPratique = newRow.insertCell(0);
+                const cellStatut = newRow.insertCell(1);
+
+                cellPratique.textContent = pratique.pratique;
+                cellStatut.textContent = pratique.statut;
+            });
+
+            // Si aucune pratique n'a été effectuée pour aujourd'hui
+            if (dailyPractices.length === 0) {
+                const newRow = tableBody.insertRow();
+                const cellMessage = newRow.insertCell(0);
+                cellMessage.colSpan = 2;
+                cellMessage.textContent = "Aucune pratique effectuée aujourd'hui.";
+                cellMessage.style.textAlign = 'center';
+                cellMessage.style.fontStyle = 'italic';
+            }
+        }
+
+        // Initialiser le rapport avec les pratiques du jour (si présentes)
+        updateJournalReport();
     </script>
 
 </body>
