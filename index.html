@@ -1,94 +1,191 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suivi Spirituel</title>
-  <style>
-    /* Style général */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-    }
-    .container {
-      width: 90%;
-      margin: 0 auto;
-      max-width: 1200px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background-color: #4CAF50;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    /* Media query pour les tablettes */
-    @media (max-width: 768px) {
-      th, td {
-        font-size: 14px;
-        padding: 8px;
-      }
-    }
-
-    /* Media query pour les mobiles */
-    @media (max-width: 480px) {
-      table, th, td {
-        display: block;
-        width: 100%;
-      }
-      th {
-        text-align: left;
-      }
-      td {
-        text-align: left;
-        padding: 8px;
-      }
-      td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        display: inline-block;
-        width: 50%;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi Spirituel Amélioré</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js CDN -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .button {
+            display: block;
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Suivi Spirituel</h1>
-    <table>
-      <tr>
-        <th>Date</th>
-        <th>Pratique</th>
-        <th>Statut</th>
-      </tr>
-      <tr>
-        <td data-label="Date">16/12/2024</td>
-        <td data-label="Pratique">Prière de Fajr</td>
-        <td data-label="Statut">Effectuée</td>
-      </tr>
-      <tr>
-        <td data-label="Date">17/12/2024</td>
-        <td data-label="Pratique">Lecture du Coran</td>
-        <td data-label="Statut">Non effectuée</td>
-      </tr>
-    </table>
-  </div>
+    <h1>Suivi Spirituel Amélioré</h1>
+    <div class="container">
+        <form id="dailyForm">
+            <label><input type="checkbox" name="prayer" value="1"> Prière en groupe</label>
+            <label><input type="checkbox" name="quran" value="1"> Lecture du Coran</label>
+            <label><input type="checkbox" name="dhikr" value="1"> Dhikr (Tasbih, Istighfar)</label>
+            <label><input type="checkbox" name="sadaqa" value="1"> Aumône (Sadaqa)</label>
+            <label><input type="checkbox" name="family" value="1"> Soutien à la famille</label>
+            <label><input type="checkbox" name="reflection" value="1"> Temps de réflexion</label>
+            <a href="#" class="button" id="submitButton">Enregistrer les actions</a>
+        </form>
+
+        <h2>Rapport Hebdomadaire</h2>
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th>Jour</th>
+                    <th>Prière</th>
+                    <th>Coran</th>
+                    <th>Dhikr</th>
+                    <th>Sadaqa</th>
+                    <th>Famille</th>
+                    <th>Réflexion</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script>
+        const form = document.getElementById("dailyForm");
+        const submitButton = document.getElementById("submitButton");
+        const reportTable = document.querySelector("#reportTable tbody");
+
+        let weeklyData = JSON.parse(localStorage.getItem("weeklyData")) || [];
+
+        // Sauvegarder les actions
+        submitButton.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString("fr-FR", { weekday: 'long' });
+
+            const formData = {
+                jour: formattedDate,
+                prayer: form.elements['prayer'].checked ? 1 : 0,
+                quran: form.elements['quran'].checked ? 1 : 0,
+                dhikr: form.elements['dhikr'].checked ? 1 : 0,
+                sadaqa: form.elements['sadaqa'].checked ? 1 : 0,
+                family: form.elements['family'].checked ? 1 : 0,
+                reflection: form.elements['reflection'].checked ? 1 : 0,
+            };
+
+            weeklyData.push(formData);
+            localStorage.setItem("weeklyData", JSON.stringify(weeklyData));
+
+            updateTable();
+            updateChart();
+            form.reset();
+        });
+
+        // Mettre à jour le tableau des rapports
+        function updateTable() {
+            reportTable.innerHTML = "";
+            weeklyData.forEach((data) => {
+                const row = `
+                    <tr>
+                        <td>${data.jour}</td>
+                        <td>${data.prayer ? "✔" : "-"}</td>
+                        <td>${data.quran ? "✔" : "-"}</td>
+                        <td>${data.dhikr ? "✔" : "-"}</td>
+                        <td>${data.sadaqa ? "✔" : "-"}</td>
+                        <td>${data.family ? "✔" : "-"}</td>
+                        <td>${data.reflection ? "✔" : "-"}</td>
+                    </tr>
+                `;
+                reportTable.insertAdjacentHTML("beforeend", row);
+            });
+        }
+
+        // Créer et mettre à jour le graphique
+        const ctx = document.getElementById('chart').getContext('2d');
+        let chart;
+
+        function updateChart() {
+            const labels = weeklyData.map(item => item.jour);
+            const dataPoints = ["prayer", "quran", "dhikr", "sadaqa", "family", "reflection"];
+            const datasets = dataPoints.map((point, index) => ({
+                label: point.charAt(0).toUpperCase() + point.slice(1),
+                data: weeklyData.map(item => item[point]),
+                backgroundColor: `rgba(${index * 40}, 99, 132, 0.6)`,
+                borderColor: `rgba(${index * 40}, 99, 132, 1)`,
+                borderWidth: 1
+            }));
+
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Initialiser le tableau et le graphique
+        updateTable();
+        updateChart();
+    </script>
 </body>
 </html>
